@@ -35,7 +35,7 @@ function make() {
       var output = $$Array.of_list(List.rev(List.mapi((function (i, op) {
                       return React.createElement("p", {
                                   key: Pervasives.string_of_int(i)
-                                }, op);
+                                }, "> " + op);
                     }), match[/* history */1])));
       return React.createElement("div", {
                   className: "input",

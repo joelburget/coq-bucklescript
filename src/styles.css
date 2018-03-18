@@ -1,15 +1,22 @@
 body {
   font-family: 'Inconsolata', monospace;
-  background-color: #f6f4f4;
-    color: #dfe1e8;
   font-size: 14px;
+  background-color: #f6f4f4;
+  color: #2b303b;
 }
 
 .input {
   height: 400px;
-  width: 560px;
+  /* width: 560px; */
   background: #2b303b;
   border-radius: 5px;
+  padding: 10px;
+  color: #dfe1e8;
+}
+
+p {
+  margin-bottom: 0;
+  line-height: 20px;
 }
 
 .prompt {
@@ -17,10 +24,12 @@ body {
 }
 
 input[type=text], input[type=text]:focus {
+  font-family: 'Inconsolata', monospace;
+  font-size: 14px;
   border: none;
   padding: 0;
   margin: 0;
-  height: 22px;
+  height: 20px;
   background: #2b303b;
   color: #ebcb8b;
   width: 80%;

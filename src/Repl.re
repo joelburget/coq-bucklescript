@@ -48,7 +48,7 @@ let make = (_children) => {
     let output =
       history
       |> List.mapi((i, op) =>
-        <p key=string_of_int(i)>(ReasonReact.stringToElement(op))</p>
+        <p key=string_of_int(i)>(ReasonReact.stringToElement("> "++ op))</p>
       )
       |> List.rev
       |> Array.of_list

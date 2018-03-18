@@ -1,0 +1,28 @@
+body {
+  font-family: 'Inconsolata', monospace;
+  background-color: #f6f4f4;
+    color: #dfe1e8;
+  font-size: 14px;
+}
+
+.input {
+  height: 400px;
+  width: 560px;
+  background: #2b303b;
+  border-radius: 5px;
+}
+
+.prompt {
+  color: #d28445;
+}
+
+input[type=text], input[type=text]:focus {
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: 22px;
+  background: #2b303b;
+  color: #ebcb8b;
+  width: 80%;
+  outline: none;
+}

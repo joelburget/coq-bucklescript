@@ -5,8 +5,14 @@ body {
   color: #2b303b;
 }
 
+.container {
+  height: 1000px;
+  overflow: scroll;
+}
+
 .input {
-  height: 400px;
+  /* height: 100%; */
+  /* height: 400px; */
   /* width: 560px; */
   background: #2b303b;
   border-radius: 5px;

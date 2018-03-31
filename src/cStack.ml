@@ -8,16 +8,37 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+exception Empty = Stack.Empty
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+type 'a t = {
+  mutable stack : 'a list;
+}
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+let create () = { stack = [] }
+
+let push x s = s.stack <- x :: s.stack
+
+let pop = function
+  | { stack = [] } -> raise Stack.Empty
+  | { stack = x::xs } as s -> s.stack <- xs; x
+
+let top = function
+  | { stack = [] } -> raise Stack.Empty
+  | { stack = x::_ } -> x
+
+let to_list { stack = s } = s
+
+let find f s = List.find f (to_list s)
+
+let find_map f s = CList.find_map f s.stack
+
+let fold_until f accu s = CList.fold_left_until f accu s.stack
+
+let is_empty { stack = s } = s = []
+
+let iter f { stack = s } = List.iter f s
+
+let clear s = s.stack <- []
+
+let length { stack = s } = List.length s
+

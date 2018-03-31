@@ -8,16 +8,20 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+type t
+(** Type of canaries. Canaries are used to ensure that an object does not use
+    generic operations. *)
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+val obj : t
+(** Canary. In the current implementation, this object is marshallable,
+    forbids generic comparison but still allows generic hashes. *)
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+module type Obj = sig type t end
+
+module Make(M : Obj) :
+sig
+  type t
+  val prj : t -> M.t
+  val inj : M.t -> t
+end
+(** Adds a canary to any type. *)

@@ -8,16 +8,21 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+type t = Obj.t
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+let obj = Obj.new_block Obj.closure_tag 0
+  (** This is an empty closure block. In the current implementation, it is
+      sufficient to allow marshalling but forbid equality. Sadly still allows
+      hash. *)
+  (** FIXME : use custom blocks somehow. *)
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+module type Obj = sig type t end
+
+module Make(M : Obj) =
+struct
+  type canary = t
+  type t = (canary * M.t)
+
+  let prj (_, x) = x
+  let inj x = (obj, x)
+end

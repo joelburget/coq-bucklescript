@@ -8,16 +8,14 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+(** ['a gxml] is the type for semi-structured documents. They generalize
+    XML by allowing any kind of attributes. *)
+type 'a gxml =
+  | Element of (string * 'a * 'a gxml list)
+  | PCData of string
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+(** [xml] is a semi-structured documents where attributes are association
+    lists from string to string. *)
+type xml = (string * string) list gxml
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+

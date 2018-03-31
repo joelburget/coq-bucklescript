@@ -8,16 +8,26 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+module type OrderedType =
+sig
+  type t
+  val compare : t -> t -> int
+end
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+module type S = Set.S
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+module Make(M : OrderedType) : S
+  with type elt = M.t
+  and type t = Set.Make(M).t
+
+module type HashedType =
+sig
+  type t
+  val hash : t -> int
+end
+
+module Hashcons (M : OrderedType) (H : HashedType with type t = M.t) : Hashcons.S with
+  type t = Set.Make(M).t
+  and type u = M.t -> M.t
+(** Create hash-consing for sets. The hashing function provided must be
+    compatible with the comparison function. *)

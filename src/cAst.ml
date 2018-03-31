@@ -8,16 +8,19 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-type t = int
+(** The ast type contains generic metadata for AST nodes. *)
+type 'a t = {
+  v   : 'a;
+  loc : Loc.t option;
+}
 
-let repr x = x
-let unsafe_of_int x = x
-let compare = Pervasives.compare
-let equal = Int.equal
-let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+let make ?loc v = { v; loc }
 
-(*
-module Set = Int.Set
-module Map = Int.Map
-*)
+let map f n = { n with v = f n.v }
+let map_with_loc f n = { n with v = f ?loc:n.loc n.v }
+let map_from_loc f l =
+  let loc, v = l in
+  { v = f ?loc v ; loc }
+
+let with_val f n = f n.v
+let with_loc_val f n = f ?loc:n.loc n.v

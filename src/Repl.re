@@ -1,4 +1,4 @@
-open Sexp;
+/* open Sexp; */
 open Serapi_protocol;
 
 /* TODO:
@@ -10,12 +10,16 @@ type action =
   | Command(string)
   | Message(answer);
 
+module StringMap = Map.Make({
+  type t = string;
+  let compare = compare
+});
+
 type state = {
   text: string,
-  history: array((string, list(answer_kind))),
+  history: StringMap.t((string, list(answer_kind))),
   /* inputRef: ref(option(ReasonReact.reactRef)), */
   inputRef: ref(option(Dom.element)),
-  worker: WebWorkers.webWorker,
 };
 
 let component = ReasonReact.reducerComponent("Repl");
@@ -32,35 +36,21 @@ let setInputRef = (theRef: Js.nullable(Dom.element), {ReasonReact.state}) => {
   state.inputRef := Js.Nullable.toOption(theRef);
 };
 
+Js.log(exec_cmd(Noop));
+
 let make = (_children) => {
   ...component,
 
   initialState: fun () => {
-    let worker = WebWorkers.create_webworker("jscoq/sertop_js.js");
     {
       text: "",
-      history: [| |],
+      history: StringMap.empty,
       inputRef: ref(None),
-      worker,
     }
   },
 
   didMount: fun (_self) => {
-    ReasonReact.SideEffects(self => {
-      WebWorkers.onMessage(self.state.worker, evt => {
-        let data = WebWorkers.MessageEvent.data(evt);
-        let response = try (Sexp.read_response(Sexp.parse(data))) {
-          | Bad_tokenize              => None
-          | Unexpected_end            => None
-          | Tokens_remaining(_tokens) => None
-        };
-        Js.log3("worker message:", data, response);
-        switch (response) {
-          | None         => ()
-          | Some(answer) => self.send(Message(answer))
-        }
-      });
-    });
+    ReasonReact.SideEffects(_self => ());
   },
 
   reducer: fun (action, state) =>
@@ -68,14 +58,16 @@ let make = (_children) => {
 
     | Command(line) => {
       let history = state.history;
+      /*
       let len = Array.length(history);
       /* unsafe_set because we're extending the array */
       Array.unsafe_set(history, len, (line, []));
-      ReasonReact.UpdateWithSideEffects({
+      */
+      ReasonReact.Update({
         ...state,
         history,
         text: "",
-      }, _self => WebWorkers.postMessage(state.worker, line))
+      }) /* , _self => WebWorkers.postMessage(state.worker, line)) */
     }
     | Typed(text) => ReasonReact.Update({...state, text})
 
@@ -85,9 +77,9 @@ let make = (_children) => {
       switch(msg) {
         | Answer(cmd_tag, answer_kind) => {
           let history = state.history;
-          let (cmd, prev_history) = Array.get(history, cmd_tag);
+          let (cmd, prev_history) = StringMap.find(cmd_tag, history);
           /* Array.set(history, cmd_tag, (cmd, [answer_kind, ...prev_history])); */
-          Array.set(history, cmd_tag, (cmd, [answer_kind, ...prev_history]));
+          let history = StringMap.add(cmd_tag, (cmd, [answer_kind, ...prev_history]), history);
           ReasonReact.Update({...state, history})
         }
         | Feedback({ contents }) => ReasonReact.SideEffects(_self =>
@@ -101,20 +93,21 @@ let make = (_children) => {
     /* TODO: make collapsible */
     let historyOutput =
       history
-      |> Array.mapi((i1, (op, output)) => {
+      |> StringMap.bindings
+      |> List.map((historyEntry: (string, (string, list(answer_kind)))) => {
+        let (i1, (op, output)) = historyEntry;
         let output_elems =
           output
           |> List.mapi((i2, answer_kind) => (
-            <p key=(string_of_int(i1) ++ "." ++ string_of_int(i2))>(ReasonReact.stringToElement(Js.String.make(answer_kind)))</p>
+            <p key=(i1 ++ "." ++ string_of_int(i2))>(ReasonReact.stringToElement(Js.String.make(answer_kind)))</p>
           ))
           |> List.rev;
 
         Array.of_list(
-          [ <p key=string_of_int(i1)>(ReasonReact.stringToElement("> "++ op))</p>,
+          [ <p key=i1>(ReasonReact.stringToElement("> "++ op))</p>,
           ...output_elems
           ]);
       })
-      |> Array.to_list /* TODO: it's silly to make into a list then back to array */
       |> Array.concat
       |> ReasonReact.arrayToElement;
 

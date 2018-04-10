@@ -69,14 +69,12 @@ module Info : sig
 
 end
 
-(* module StateStore : Store.S *)
+module StateStore : Store.S
 type goal = Evar.t
 type goal_with_state
 val drop_state : goal_with_state -> goal
-(*
 val get_state : goal_with_state -> StateStore.t
 val goal_with_state : goal -> StateStore.t -> goal_with_state
-*)
 val with_empty_state : goal -> goal_with_state
 val map_goal_with_state : (goal -> goal) -> goal_with_state -> goal_with_state
 

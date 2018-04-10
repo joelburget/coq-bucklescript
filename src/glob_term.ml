@@ -17,7 +17,7 @@
    arguments and pattern-matching compilation are not. *)
 
 open Names
-(* open Globnames *)
+open Globnames
 open Decl_kinds
 open Misctypes
 

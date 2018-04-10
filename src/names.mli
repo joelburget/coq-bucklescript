@@ -68,7 +68,7 @@ sig
   module Pred : Predicate.S with type elt = t
   (** Predicates over identifiers. *)
 
-  (* module List : List.MonoS with type elt = t *)
+  module List : List.MonoS with type elt = t
   (** Operations over lists of identifiers. *)
 
   val hcons : t -> t

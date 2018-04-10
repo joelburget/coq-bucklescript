@@ -21,158 +21,9 @@
 (************************************************************************)
 
 (*
-open Ltac_plugin
-open Sexplib.Conv
-*)
-
-module Stateid : sig
-  type t = string
-end
-
-module Loc : sig
-  type t = ()
-  type 'a located = ()
-end
-
-module Pp : sig
-  type t = string
-end
-
-module Feedback : sig
-  (* Legacy-style logging messages (used to be in Pp) *)
-  type level =
-    | Debug
-    | Info
-    | Notice
-    | Warning
-    | Error
-
-  (** Document unique identifier for serialization *)
-  type doc_id = int
-
-  (** Coq "semantic" infos obtained during execution *)
-  type route_id = int
-
-  val default_route : route_id
-
-  type xml = ()
-
-  type feedback_content =
-    (* STM mandatory data (must be displayed) *)
-    | Processed
-    | Incomplete
-    | Complete
-    (* STM optional data *)
-    | ProcessingIn of string
-    | InProgress of int
-    | WorkerStatus of string * string
-    (* Generally useful metadata *)
-    | AddedAxiom
-    | GlobRef of Loc.t * string * string * string * string
-    | GlobDef of Loc.t * string * string * string
-    | FileDependency of string option * string
-    | FileLoaded of string * string
-    (* Extra metadata *)
-    | Custom of Loc.t option * string * xml
-    (* Generic messages *)
-    | Message of level * Loc.t option * Pp.t
-
-  type feedback = {
-    doc_id   : doc_id;            (* The document being concerned *)
-    span_id  : Stateid.t;         (* The document part concerned *)
-    route    : route_id;          (* Extra routing info *)
-    contents : feedback_content;  (* The payload *)
-  }
-end
-
-module Tok : sig
-  type t = ()
-end
-
-module Vernacexpr : sig
-  type vernac_control = ()
-end
-
-module Goptions : sig
-  type option_name = ()
-  type option_state = ()
-end
-
-module Constr : sig
-  type t = ()
-  type constr = ()
-end
-
-module Constrexpr : sig
-  type constr_expr = ()
-  type notation = ()
-end
-
-module Names : sig
-  module MutInd : sig
-    type t = ()
-  end
-  module KerName : sig
-    type t = ()
-  end
-end
-
-module Declarations : sig
-  type mutual_inductive_body = ()
-end
-
-module Tacenv : sig
-  type ltac_entry = ()
-end
-
-module Tacexpr : sig
-  type raw_tactic_expr = ()
-end
-
-module Genarg : sig
-  type raw_generic_argument = ()
-end
-
-module Libnames : sig
-  type qualid = ()
-end
-
-module Globnames : sig
-  type global_reference = ()
-end
-
-module Impargs : sig
-  type implicits_list = ()
-end
-
-module Profile_ltac : sig
-  type treenode = ()
-end
-
-module Notation : sig
-  type unparsing_rule = ()
-  type extra_unparsing_rules = ()
-end
-
-module Notation_term : sig
-  type notation_grammar = ()
-end
-
-module Proof : sig
-  type 'a pre_goals = ()
-end
-
-(* TODO: use serapi_goals file *)
-module Serapi_goals : sig
-  type 'a reified_goal = ()
-end
-
-module Goal : sig
-  type goal = ()
-end
-
 type 'a sexp_list = 'a list
 type 'a sexp_option = 'a option
+*)
 
 (******************************************************************************)
 (* Basic Protocol Objects                                                     *)
@@ -255,8 +106,8 @@ type query_pred =
   | Prefix of string
 
 type query_opt =
-  { preds : query_pred sexp_list;
-    limit : int sexp_option;
+  { (*preds : query_pred sexp_list;
+    limit : int sexp_option; *)
     sid   : Stateid.t [@default Stm.get_current_state ~doc:Stm.(get_doc 0)];
     pp    : print_opt [@default { pp_format = PpSer; pp_depth = 0; pp_elide = "..."; pp_margin = 72 } ];
     (* Legacy/Deprecated *)
@@ -289,9 +140,11 @@ type query_cmd =
 (******************************************************************************)
 
 type add_opts = {
+  (*
   lim    : int       sexp_option;
   ontop  : Stateid.t sexp_option;
   newtip : Stateid.t sexp_option;
+  *)
   verb   : bool      [@default false];
 }
 
@@ -327,7 +180,7 @@ type cmd =
 
 val exec_cmd : cmd -> answer_kind list
 
-type cmd_tag = int
+type cmd_tag = string
 type tagged_cmd = cmd_tag * cmd
 
 (* XXX: Maybe 'a answer for a parametric serializer? *)
@@ -350,6 +203,7 @@ type answer =
 (*   async    : Sertop_init.async_flags; *)
 (* } *)
 
+  (*
 module Jslib : sig
   type coq_pkg = {
     pkg_id    : string list;
@@ -376,3 +230,4 @@ type lib_event =
   | LibProgress of progress_info             (* Information about loading progress *)
   | LibLoaded   of string                    (* Bundle [pkg] is loaded *)
 
+  *)

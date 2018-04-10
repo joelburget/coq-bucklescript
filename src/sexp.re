@@ -127,6 +127,7 @@ Js.log(parse("(Exec 5)"));
 Js.log(parse("(Query ((sid 3) (pp ((pp_format PpStr)))) Goals)"));
 */
 
+/*
 open Serapi_protocol;
 
 let read_cmd = fun (exp: sexp): option(cmd) {
@@ -222,7 +223,7 @@ let read_feedback = fun (exp: sexp): option(Feedback.feedback) {
       ]) =>
       Js.Option.map([@bs] (contents => {
         doc_id,
-        span_id: "TODO: span_id",
+        span_id: Stateid.dummy, /* TODO: span_id */
         route,
         contents,
       }), read_feedback_content(raw_contents))
@@ -250,3 +251,4 @@ let read_response = fun (exp: sexp): option(answer) {
     | _ => None
   }
 };
+*/

@@ -15,10 +15,6 @@ type query_cmd = string
 type print_opt = string
 type cmd_tag = int
 
-module Feedback : sig
-  type feedback = ()
-end
-
 type answer_kind =
     Ack
   | Completed

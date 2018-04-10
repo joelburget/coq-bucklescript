@@ -1,6 +1,6 @@
 let component = ReasonReact.statelessComponent("Page");
 
-let make = (~message, _children) => {
+let make = (~message as _, _children) => {
   ...component,
 
   render: (_self) =>

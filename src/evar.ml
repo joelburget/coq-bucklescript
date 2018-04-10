@@ -15,9 +15,7 @@ let unsafe_of_int x = x
 let compare = Pervasives.compare
 let equal = Int.equal
 let hash x = x
-(* let print x = Pp.(str "?X" ^ int x) *)
+let print x = Pp.(str "?X" ++ int x)
 
-(*
 module Set = Int.Set
 module Map = Int.Map
-*)

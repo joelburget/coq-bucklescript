@@ -7,10 +7,26 @@
   "reason": {
     "react-jsx": 2
   },
-  "sources": {
-    "dir" : "src",
-    "subdirs" : true
-  },
+  "sources": [
+    {
+      "dir" : "src",
+      "subdirs" : true
+    },
+    "clib",
+    "kernel",
+    "library",
+    "parsing",
+    "printing",
+    "proofs",
+    "pretyping",
+    "shims",
+    "stm",
+    "tactics",
+    "vernac",
+    "camlp5/ocaml_src/lib",
+    "camlp5/ocaml_stuff/4.06.0/parsing",
+    "camlp5/ocaml_stuff/4.06.0/utils"
+  ],
   "package-specs": [{
     "module": "commonjs",
     "in-source": true
@@ -24,5 +40,6 @@
   "refmt": 3,
   "warnings": {
     "error": "+5"
-  }
+  },
+  "bsc-flags": ["-rectypes"]
 }

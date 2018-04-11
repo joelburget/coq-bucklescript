@@ -368,7 +368,7 @@ let locate_file f = failwith "undefined: locate_file"
   (* let file = Flags.silently Loadpath.locate_file f in
   str file *)
 
-let msg_found_library = failwith "undefined: msg_found_library"
+let msg_found_library _ = failwith "undefined: msg_found_library"
 (*
 = function
   | Library.LibLoaded, fulldir, file ->

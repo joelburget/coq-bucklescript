@@ -112,9 +112,9 @@ module Make(T : Task) () = struct
   module Worker = struct
     type process =
       | Worker_process_shim
-    let spawn = failwith "unimplemented: Worker.spawn"
-    let kill = failwith "unimplemented: Worker.kill"
-    let is_alive = failwith "unimplemented: Worker.is_alive"
+    let spawn    _ = failwith "unimplemented: Worker.spawn"
+    let kill     _ = failwith "unimplemented: Worker.kill"
+    let is_alive _ = failwith "unimplemented: Worker.is_alive"
   end
 
   module Model = struct
@@ -140,7 +140,7 @@ module Make(T : Task) () = struct
         | x::tl -> x :: set_slave_opt tl in
       let args =
         Array.of_list (set_slave_opt (List.tl (Array.to_list Sys.argv))) in
-      let env = Array.append (T.extra_env ()) (Unix.environment ()) in
+      let env = (*Array.append*) (T.extra_env ()) (*Unix.environment ()*) in
     Worker.spawn ~env Sys.argv.(0) args in
     name, proc, CThread.prepare_in_channel_for_thread_friendly_io ic, oc
 
@@ -189,7 +189,7 @@ module Make(T : Task) () = struct
         let () = TQueue.broadcast queue in
         Worker.kill proc
       else
-        let () = Unix.sleep 1 in
+        (* let () = Unix.sleep 1 in *)
         kill_if ()
     in
     let kill_if () =

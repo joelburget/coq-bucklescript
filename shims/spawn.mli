@@ -26,8 +26,8 @@ module type Control = sig
 
   val kill : handle -> unit
   val stats : handle -> Gc.stat
-  val wait : handle -> Unix.process_status
-  val unixpid : handle -> int
+  (* val wait : handle -> Unix.process_status
+  val unixpid : handle -> int *)
 
   (* What is used in debug messages *)
   val uid : handle -> string
@@ -44,8 +44,8 @@ module type MainLoopModel = sig
   val add_watch : callback:(condition list -> bool) -> async_chan -> watch_id
   val remove_watch : watch_id -> unit
   val read_all : async_chan -> string
-  val async_chan_of_file : Unix.file_descr -> async_chan
-  val async_chan_of_socket : Unix.file_descr -> async_chan
+  (* val async_chan_of_file : Unix.file_descr -> async_chan
+  val async_chan_of_socket : Unix.file_descr -> async_chan *)
 end
 
 (* spawn a process and read its output asynchronously *)

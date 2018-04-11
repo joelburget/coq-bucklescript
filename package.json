@@ -8,9 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w"
   },
-  "keywords": [
-    "BuckleScript"
-  ],
+  "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -20,7 +18,7 @@
     "reason-react": ">=0.3.0"
   },
   "devDependencies": {
-    "bs-platform": "^2.2.2",
+    "bs-platform": "^2.2.3",
     "webpack": "^3.8.1"
   }
 }

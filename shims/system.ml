@@ -6,6 +6,6 @@ let fmt_time_difference t1 t2 = Pp.(str "fmt_time_difference")
 
 let intern_state _i _s = failwith "unimplemented: intern_state"
 let extern_state _i _s _a = failwith "unimplemented: intern_state"
-let raw_extern_state = failwith "unimplemented: raw_extern_state"
-let skip_in_segment = failwith "unimplemented: skip_in_segment"
-let marshal_in_segment = failwith "unimplemented: marshal_in_segment"
+let raw_extern_state _ = failwith "unimplemented: raw_extern_state"
+let skip_in_segment _ = failwith "unimplemented: skip_in_segment"
+let marshal_in_segment _ = failwith "unimplemented: marshal_in_segment"

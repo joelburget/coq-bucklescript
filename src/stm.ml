@@ -1480,7 +1480,7 @@ end = struct (* {{{ *)
 
   let build_proof_here ?loc ~drop_pt (id,valid) eop =
     Future.create (State.exn_on id ~valid) (fun () ->
-      let wall_clock1 = Unix.gettimeofday () in
+      (* let wall_clock1 = Unix.gettimeofday () in *)
       if VCS.is_interactive () = `No then Reach.known_state ~cache:`No eop
       else Reach.known_state ~cache:`Shallow eop;
       (*
@@ -1497,10 +1497,10 @@ end = struct (* {{{ *)
       VCS.restore document;
       VCS.print ();
       let proof, future_proof, time =
-        let wall_clock = Unix.gettimeofday () in
+        (* let wall_clock = Unix.gettimeofday () in *)
         let fp = build_proof_here ?loc ~drop_pt:drop exn_info stop in
         let proof = Future.force fp in
-        proof, fp, Unix.gettimeofday () -. wall_clock in
+        proof, fp, 0.0 (* Unix.gettimeofday () -. wall_clock *) in
       (* We typecheck the proof with the kernel (in the worker) to spot
        * the few errors tactics don't catch, like the "fix" tactic building
        * a bad fixpoint *)
@@ -2410,7 +2410,7 @@ let known_state ?(redefine_qed=false) ~cache id =
             resilient_command reach view.next;
             let st = Vernacstate.freeze_interp_state `No in
             ignore(stm_vernac_interp id st x);
-            wall_clock_last_fork := Unix.gettimeofday ()
+            wall_clock_last_fork := 0.0 (* Unix.gettimeofday () *)
           ), `Yes, true
       | `Fork ((x,_,_,_), Some prev) -> (fun () -> (* nested proof *)
             reach ~cache:`Shallow prev;
@@ -2423,7 +2423,7 @@ let known_state ?(redefine_qed=false) ~cache id =
               let (e, info) = CErrors.push e in
               let info = Stateid.add info ~valid:prev id in
               Exninfo.iraise (e, info));
-            wall_clock_last_fork := Unix.gettimeofday ()
+            wall_clock_last_fork := 0.0 (* Unix.gettimeofday () *)
           ), `Yes, true
       | `Qed ({ qast = x; keep; brinfo; brname } as qed, eop) ->
           let rec aux = function
@@ -2501,7 +2501,7 @@ let known_state ?(redefine_qed=false) ~cache id =
                                 (State.exn_on id ~valid:eop)) in
                 if keep != VtKeepAsAxiom then
                   reach view.next;
-                let wall_clock2 = Unix.gettimeofday () in
+                (* let wall_clock2 = Unix.gettimeofday () in *)
                 let st = Vernacstate.freeze_interp_state `No in
                 ignore(stm_vernac_interp id ?proof st x);
                 (*

@@ -583,14 +583,12 @@ module ControlUtil = struct
   type doc    = Stateid.t list
   let cur_doc : doc ref = ref [Stateid.of_int 1]
 
-  let pp_doc fmt l = failwith "pp_doc"
-    (*
+  let pp_doc fmt l =
     let open Serapi_pp in
     Format.fprintf fmt "@[%a@]" (pp_list ~sep:" " pp_stateid) l
 
   let _dump_doc () =
     Format.eprintf "%a@\n%!" pp_doc !cur_doc
-    *)
 
   let add_sentences ~doc opts sent =
     let pa = Pcoq.Gram.parsable (Stream.of_string sent) in
@@ -605,6 +603,12 @@ module ControlUtil = struct
          * document to avoid an Anomaly exception.
          *)
         if not (List.mem !stt !cur_doc) then
+          Format.eprintf "about to throw!\ndoc dump:\n";
+          _dump_doc ();
+          Js.log "cur_doc:";
+          List.iter (fun x -> Printf.printf "%d " (Stateid.to_int x)) !cur_doc;
+          Js.log "/cur_doc";
+          Js.log2 "stt:" !stt;
           raise (NoSuchState !stt);
         let east      = Stm.parse_sentence ~doc:!doc !stt pa in
         (* XXX: Must like refine the API *)

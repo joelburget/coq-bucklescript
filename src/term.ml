@@ -53,7 +53,7 @@ type case_info = Constr.case_info =
   }
 
 type cast_kind = Constr.cast_kind =
-  VMcast | NATIVEcast | DEFAULTcast | REVERTcast
+  (* VMcast | NATIVEcast | *) DEFAULTcast | REVERTcast
 
 (********************************************************************)
 (*       Constructions as implemented                               *)

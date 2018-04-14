@@ -25,6 +25,7 @@ open RedFlags
 open Libobject
 open Misctypes
 
+    (*
 (* call by value normalisation function using the virtual machine *)
 let cbv_vm env sigma c =
   if Coq_config.bytecode_compiler then
@@ -33,7 +34,6 @@ let cbv_vm env sigma c =
   else
     compute env sigma c
 
-    (*
 let warn_native_compute_disabled =
   CWarnings.create ~name:"native-compute-disabled" ~category:"native-compiler"
   (fun () ->
@@ -74,8 +74,8 @@ let set_strategy_one ref l  =
       | EvalVarRef id -> VarKey id in
   Global.set_strategy k l;
   match k,l with
-      ConstKey sp, Conv_oracle.Opaque ->
-        Csymtable.set_opaque_const sp
+      (* ConstKey sp, Conv_oracle.Opaque ->
+        Csymtable.set_opaque_const sp *)
     | ConstKey sp, _ ->
         let cb = Global.lookup_constant sp in
 	(match cb.const_body with
@@ -84,7 +84,7 @@ let set_strategy_one ref l  =
               (str "Cannot make" ++ spc () ++
 		 Nametab.pr_global_env Id.Set.empty (ConstRef sp) ++
 		 spc () ++ str "transparent because it was declared opaque.");
-	  | _ -> Csymtable.set_transparent_const sp)
+	  (* | _ -> Csymtable.set_transparent_const sp *))
     | _ -> ()
 
 let cache_strategy (_,str) =
@@ -256,7 +256,7 @@ let reduction_of_red_expr env =
 	 with Not_found ->
 	   user_err ~hdr:"Redexpr.reduction_of_red_expr"
              (str "unknown user-defined reduction \"" ++ str s ++ str "\"")))
-  | CbvVm o -> (contextualize cbv_vm cbv_vm o, VMcast)
+  (* | CbvVm o -> (contextualize cbv_vm cbv_vm o, VMcast) *)
   (* | CbvNative o -> (contextualize cbv_native cbv_native o, NATIVEcast) *)
   in
     reduction_of_red_expr

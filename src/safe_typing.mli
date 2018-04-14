@@ -220,12 +220,14 @@ val delta_of_senv :
 
 (** {6 Retroknowledge / Native compiler } *)
 
+  (*
 open Retroknowledge
 
 val retroknowledge : (retroknowledge-> 'a) -> safe_environment -> 'a
 
 val register :
   field -> Retroknowledge.entry -> Constr.constr -> safe_transformer0
+  *)
 
 val register_inline : Constant.t -> safe_transformer0
 

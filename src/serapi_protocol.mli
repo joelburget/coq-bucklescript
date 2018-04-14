@@ -20,10 +20,8 @@
 (* Public API for Ocaml clients                                         *)
 (************************************************************************)
 
-(*
 type 'a sexp_list = 'a list
 type 'a sexp_option = 'a option
-*)
 
 (******************************************************************************)
 (* Basic Protocol Objects                                                     *)
@@ -106,8 +104,8 @@ type query_pred =
   | Prefix of string
 
 type query_opt =
-  { (*preds : query_pred sexp_list;
-    limit : int sexp_option; *)
+  { preds : query_pred sexp_list;
+    limit : int sexp_option;
     sid   : Stateid.t [@default Stm.get_current_state ~doc:Stm.(get_doc 0)];
     pp    : print_opt [@default { pp_format = PpSer; pp_depth = 0; pp_elide = "..."; pp_margin = 72 } ];
     (* Legacy/Deprecated *)
@@ -140,11 +138,9 @@ type query_cmd =
 (******************************************************************************)
 
 type add_opts = {
-  (*
   lim    : int       sexp_option;
   ontop  : Stateid.t sexp_option;
   newtip : Stateid.t sexp_option;
-  *)
   verb   : bool      [@default false];
 }
 

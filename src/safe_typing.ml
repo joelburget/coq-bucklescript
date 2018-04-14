@@ -127,9 +127,9 @@ type safe_environment =
     future_cst : Univ.ContextSet.t Future.computation list;
     engagement : engagement option;
     required : vodigest DPMap.t;
-    loads : (ModPath.t * module_body) list;
-    local_retroknowledge : Retroknowledge.action list; }
-    (* native_symbols : Nativecode.symbols DPMap.t } *)
+    loads : (ModPath.t * module_body) list; }
+    (* local_retroknowledge : Retroknowledge.action list; }
+    native_symbols : Nativecode.symbols DPMap.t } *)
 
 and modvariant =
   | NONE
@@ -156,9 +156,9 @@ let empty_environment =
     univ = Univ.ContextSet.empty;
     engagement = None;
     required = DPMap.empty;
-    loads = [];
-    local_retroknowledge = []; }
-    (* native_symbols = DPMap.empty } *)
+    loads = []; }
+    (* local_retroknowledge = []; }
+    native_symbols = DPMap.empty } *)
 
 let is_initial senv =
   match senv.revstruct, senv.modvariant with
@@ -665,8 +665,8 @@ let build_module_body params restype senv =
     Mod_typing.finalize_module senv.env senv.modpath
       (struc,None,senv.modresolver,senv.univ) restype'
   in
-  let mb' = functorize_module params mb in
-  { mb' with mod_retroknowledge = ModBodyRK senv.local_retroknowledge }
+  let mb' = functorize_module params mb in mb'
+  (* { mb' with mod_retroknowledge = ModBodyRK senv.local_retroknowledge } *)
 
 (** Returning back to the old pre-interactive-module environment,
     with one extra component and some updated fields
@@ -695,10 +695,10 @@ let propagate_senv newdef newenv newresolver senv oldsenv =
     (* engagement is propagated to the upper level *)
     engagement = senv.engagement;
     required = senv.required;
-    loads = senv.loads@oldsenv.loads;
+    loads = senv.loads@oldsenv.loads; }
+    (*
     local_retroknowledge =
             senv.local_retroknowledge@oldsenv.local_retroknowledge; }
-    (*
     native_symbols = senv.native_symbols}
     *)
 
@@ -730,8 +730,8 @@ let build_mtb mp sign cst delta =
     mod_type = sign;
     mod_type_alg = None;
     mod_constraints = cst;
-    mod_delta = delta;
-    mod_retroknowledge = ModTypeRK }
+    mod_delta = delta; }
+    (* mod_retroknowledge = ModTypeRK } *)
 
 let end_modtype l senv =
   let mp = senv.modpath in
@@ -908,6 +908,7 @@ let typing senv = Typeops.infer (env_of_senv senv)
 
 (** {6 Retroknowledge / native compiler } *)
 
+(*
 (** universal lifting, used for the "get" operations mostly *)
 let retroknowledge f senv =
   Environ.retroknowledge f (env_of_senv senv)
@@ -921,6 +922,7 @@ let register field value by_clause senv =
     local_retroknowledge =
       Retroknowledge.RKRegister (field,value)::senv.local_retroknowledge
   }
+*)
 
 (* This function serves only for inlining constants in native compiler for now,
 but it is meant to become a replacement for environ.register *)

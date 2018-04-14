@@ -534,7 +534,7 @@ type case_info = Constr.case_info =
 [@@ocaml.deprecated "Alias for Constr.case_info"]
 
 type cast_kind = Constr.cast_kind =
-  VMcast | NATIVEcast | DEFAULTcast | REVERTcast
+  (* VMcast | NATIVEcast | *) DEFAULTcast | REVERTcast
 [@@ocaml.deprecated "Alias for Constr.cast_kind"]
 
 type rec_declaration = Constr.rec_declaration

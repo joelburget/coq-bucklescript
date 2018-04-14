@@ -37,6 +37,15 @@ let setInputRef = (theRef: Js.nullable(Dom.element), {ReasonReact.state}) => {
 };
 
 Js.log(exec_cmd(Noop));
+Js.log(exec_cmd(Help));
+Js.log(exec_cmd(Add(
+      { lim: None,
+        ontop: None,
+        newtip: None,
+        verb: true
+      },
+      "From Coq Require Import Prelude."
+)));
 
 let make = (_children) => {
   ...component,
@@ -56,7 +65,7 @@ let make = (_children) => {
   reducer: fun (action, state) =>
     switch (action) {
 
-    | Command(line) => {
+    | Command(_line) => {
       let history = state.history;
       /*
       let len = Array.length(history);

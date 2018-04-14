@@ -30,6 +30,9 @@
 (* open Ltac_plugin *)
 (* open! Sexplib.Conv *)
 
+type 'a sexp_list = 'a list
+type 'a sexp_option = 'a option
+
 module Extra = struct
 
   let hd_opt l = match l with
@@ -344,8 +347,8 @@ let gen_pred (p : query_pred) (obj : coq_object) : bool = match p with
   | Prefix s -> prefix_pred s obj
 
 type query_opt =
-  { (* preds : query_pred sexp_list;
-    limit : int sexp_option;*)
+  { preds : query_pred sexp_list;
+    limit : int sexp_option;
     sid   : Stateid.t [@default Stm.get_current_state()];
     pp    : print_opt [@default { pp_format = PpSer; pp_depth = 0; pp_elide = "..."; pp_margin = 72 } ];
     (* Legacy/Deprecated *)
@@ -569,11 +572,9 @@ let coq_protect e =
     (* Richpp.richpp_of_pp msg *)
 
 type add_opts = {
-  (*
   lim    : int       sexp_option;
   ontop  : Stateid.t sexp_option;
   newtip : Stateid.t sexp_option;
-  *)
   verb   : bool      [@default false];
 }
 
@@ -591,8 +592,7 @@ module ControlUtil = struct
     Format.eprintf "%a@\n%!" pp_doc !cur_doc
     *)
 
-  let add_sentences ~doc opts sent = failwith "add_sentences"
-  (*
+  let add_sentences ~doc opts sent =
     let pa = Pcoq.Gram.parsable (Stream.of_string sent) in
     let i   = ref 1                    in
     let acc = ref []                   in
@@ -620,7 +620,6 @@ module ControlUtil = struct
     with
     | Stm.End_of_input -> !doc, List.rev !acc
     | exn              -> !doc, List.rev (coq_exn_info exn :: !acc)
-*)
 
   (* We follow a suggestion by Clément to report sentence invalidation
      in a more modular way: When we issue the cancel command, we will
@@ -726,7 +725,7 @@ let exec_cmd (cmd : cmd) =
     (
       let inc = open_in f in
       try
-        let faddopts = { (* lim = None; ontop = None; newtip = None;*) verb = false; } in
+        let faddopts = { lim = None; ontop = None; newtip = None; verb = false; } in
         let fsize    = in_channel_length inc         in
         let fcontent = really_input_string inc fsize in
         snd @@ ControlUtil.add_sentences ~doc faddopts fcontent

@@ -20,7 +20,7 @@ open Locus
 
 type red_expr =
     (constr, evaluable_global_reference, constr_pattern) red_expr_gen
- 
+
 val out_with_occurrences : 'a with_occurrences -> occurrences * 'a
 
 val reduction_of_red_expr :
@@ -45,4 +45,4 @@ val set_strategy :
   bool -> (Conv_oracle.level * evaluable_global_reference list) list -> unit
 
 (** call by value normalisation function using the virtual machine *)
-val cbv_vm : reduction_function
+(* val cbv_vm : reduction_function *)

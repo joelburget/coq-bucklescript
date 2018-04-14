@@ -462,7 +462,7 @@ let build_constant_declaration kn env result =
   let tps =
     let res =
       match result.cook_proj with
-      | None -> compile_constant_body env univs def
+      (* | None -> compile_constant_body env univs def *)
       | Some pb ->
 	(* The compilation of primitive projections is a bit tricky, because
            they refer to themselves (the body of p looks like fun c =>
@@ -475,21 +475,22 @@ let build_constant_declaration kn env result =
 	    const_body = def;
 	    const_type = typ;
 	    const_proj = result.cook_proj;
-	    const_body_code = None;
+	    (* const_body_code = None; *)
 	    const_universes = univs;
 	    const_inline_code = result.cook_inline;
 	    const_typing_flags = Environ.typing_flags env;
 	    }
 	in
 	let env = add_constant kn cb env in
-	compile_constant_body env univs def
+  () in () in
+	(* compile_constant_body env univs def
     in Option.map Cemitcodes.from_val res
-  in
+  in *)
   { const_hyps = hyps;
     const_body = def;
     const_type = typ;
     const_proj = result.cook_proj;
-    const_body_code = tps;
+    (* const_body_code = tps; *)
     const_universes = univs;
     const_inline_code = result.cook_inline;
     const_typing_flags = Environ.typing_flags env }

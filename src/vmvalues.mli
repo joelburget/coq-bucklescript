@@ -50,7 +50,7 @@ type vswitch = {
     sw_env : vm_env
   }
 
-external mkAccuCode : int -> tcode = "coq_makeaccu"
+external mkAccuCode : int -> tcode = "coq_makeaccu" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 val fun_code : vfun -> tcode
 val fix_code : vfix -> tcode
@@ -123,7 +123,7 @@ val dom : vprod -> values
 val codom : vprod -> vfun
 
 (** Fun *)
-external closure_arity : vfun -> int = "coq_closure_arity"
+external closure_arity : vfun -> int = "coq_closure_arity" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 (** Fix *)
 
@@ -133,7 +133,7 @@ val rec_args : vfix -> int array
 val first_fix : vfix -> vfix
 val fix_types : vfix -> tcode array
 val cofix_types : vcofix -> tcode array
-external offset_closure_fix : vfix -> int -> vm_env = "coq_offset_closure"
+external offset_closure_fix : vfix -> int -> vm_env = "coq_offset_closure" [@@bs.call] [@@bs.module "../shims/byterun"]
 val mk_fix_body : int -> int -> vfix -> vfun array
 
 (** CoFix *)

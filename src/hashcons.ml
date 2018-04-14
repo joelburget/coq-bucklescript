@@ -134,7 +134,7 @@ module Hstring = Make(
     let hashcons () s =(* incr accesstr;*) s
 
     [@@@ocaml.warning "-3"]     (* [@@noalloc] since 4.03.0 GPR#240 *)
-    external eq : string -> string -> bool = "caml_string_equal" "noalloc"
+    let eq : string -> string -> bool = Pervasives.(==)
     [@@@ocaml.warning "+3"]
 
     (** Copy from CString *)

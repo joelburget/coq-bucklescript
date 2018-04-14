@@ -17,7 +17,7 @@ open Univ
 (* Necessary for [relaccu_tbl]             *)
 (*******************************************)
 
-external init_vm : unit -> unit = "init_coq_vm"
+external init_vm : unit -> unit = "init_coq_vm" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 let _ = init_vm ()
 
@@ -57,8 +57,8 @@ let fun_of_val v = (Obj.magic v : vfun)
 
 type tcode
 
-external mkAccuCode : int -> tcode = "coq_makeaccu"
-external offset_tcode : tcode -> int -> tcode = "coq_offset_tcode"
+external mkAccuCode : int -> tcode = "coq_makeaccu" [@@bs.call] [@@bs.module "../shims/byterun"]
+external offset_tcode : tcode -> int -> tcode = "coq_offset_tcode" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 let tcode_of_obj v = ((Obj.obj v):tcode)
 let fun_code v = tcode_of_obj (Obj.field (Obj.repr v) 0)
@@ -248,10 +248,10 @@ let rec whd_accu a stk =
     CErrors.anomaly
       Pp.(strbrk "Failed to parse VM value. Tag = " ++ int tg ++ str ".")
 
-external kind_of_closure : Obj.t -> int = "coq_kind_of_closure"
-external is_accumulate : tcode -> bool = "coq_is_accumulate_code"
-external int_tcode : tcode -> int -> int = "coq_int_tcode"
-external accumulate : unit -> tcode = "accumulate_code"
+external kind_of_closure : Obj.t -> int = "coq_kind_of_closure" [@@bs.call] [@@bs.module "../shims/byterun"]
+external is_accumulate : tcode -> bool = "coq_is_accumulate_code" [@@bs.call] [@@bs.module "../shims/byterun"]
+external int_tcode : tcode -> int -> int = "coq_int_tcode" [@@bs.call] [@@bs.module "../shims/byterun"]
+external accumulate : unit -> tcode = "accumulate_code" [@@bs.call] [@@bs.module "../shims/byterun"]
 let accumulate = accumulate ()
 
 let whd_val : values -> whd =
@@ -360,13 +360,13 @@ let codom : vprod -> vfun = fun p -> (Obj.obj (Obj.field (Obj.repr p) 1))
 
 (* Functions over vfun *)
 
-external closure_arity : vfun -> int = "coq_closure_arity"
+external closure_arity : vfun -> int = "coq_closure_arity" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 (* Functions over fixpoint *)
 
-external offset : Obj.t -> int = "coq_offset"
-external offset_closure : Obj.t -> int -> Obj.t = "coq_offset_closure"
-external offset_closure_fix : vfix -> int -> vm_env = "coq_offset_closure"
+external offset : Obj.t -> int = "coq_offset" [@@bs.call] [@@bs.module "../shims/byterun"]
+external offset_closure : Obj.t -> int -> Obj.t = "coq_offset_closure" [@@bs.call] [@@bs.module "../shims/byterun"]
+external offset_closure_fix : vfix -> int -> vm_env = "coq_offset_closure" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 let first o = (offset_closure o (offset o))
 let first_fix (v:vfix) = (Obj.magic (first (Obj.repr v)) : vfix)
@@ -407,8 +407,8 @@ let check_fix f1 f2 =
     else false
   else false
 
-external atom_rel : unit -> atom array = "get_coq_atom_tbl"
-external realloc_atom_rel : int -> unit = "realloc_coq_atom_tbl"
+external atom_rel : unit -> atom array = "get_coq_atom_tbl" [@@bs.call] [@@bs.module "../shims/byterun"]
+external realloc_atom_rel : int -> unit = "realloc_coq_atom_tbl" [@@bs.call] [@@bs.module "../shims/byterun"]
 
 let relaccu_tbl =
   let atom_rel = atom_rel() in

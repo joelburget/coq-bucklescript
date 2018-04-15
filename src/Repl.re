@@ -38,6 +38,17 @@ let setInputRef = (theRef: Js.nullable(Dom.element), {ReasonReact.state}) => {
 
 Js.log(exec_cmd(Noop));
 Js.log(exec_cmd(Help));
+let result = exec_cmd(Add(
+      { lim: None,
+        ontop: None /* Some(Stateid.of_int(1)) */,
+        newtip: None,
+        verb: true
+      },
+      "Inductive foo := Foo."
+));
+Js.log2("result", result);
+List.map(ans => Serapi_protocol.pp_answer(Format.std_formatter, ans), result);
+/*
 Js.log(exec_cmd(Add(
       { lim: None,
         ontop: None,
@@ -46,6 +57,7 @@ Js.log(exec_cmd(Add(
       },
       "From Coq Require Import Prelude."
 )));
+*/
 
 let make = (_children) => {
   ...component,

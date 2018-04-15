@@ -12,21 +12,6 @@
       "dir" : "src",
       "subdirs" : true
     },
-    "clib",
-    "engine",
-    "interp",
-    "intf",
-    "kernel",
-    "lib",
-    "library",
-    "parsing",
-    "printing",
-    "proofs",
-    "pretyping",
-    "shims",
-    "stm",
-    "tactics",
-    "vernac",
 
     "serapi",
 

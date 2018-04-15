@@ -13,7 +13,7 @@
       "subdirs" : true
     },
 
-    "serapi",
+    "coq-serapi/serapi",
 
     "camlp5/ocaml_src/lib",
     "camlp5/ocaml_stuff/4.06.0/parsing",

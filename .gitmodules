@@ -1,3 +1,6 @@
 [submodule "jscoq-builds"]
 	path = jscoq-builds
 	url = git@github.com:ejgallego/jscoq-builds.git
+[submodule "coq-serapi"]
+	path = coq-serapi
+	url = git@github.com:ejgallego/coq-serapi.git

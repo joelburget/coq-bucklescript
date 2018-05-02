@@ -13,6 +13,23 @@
       "subdirs" : true
     },
 
+    { "dir": "coq/clib", "excludes": ["cUnix.ml", "cUnix.mli", "minisys.ml"] },
+    "coq/engine",
+    { "dir": "coq/interp", "excludes": ["dumpglob.ml", "dumpglob.mli"] },
+    "coq/intf",
+    { "dir": "coq/kernel", "excludes": ["nativelib.ml", "nativelib.mli", "nativelibrary.ml", "nativelibrary.mli", "uint31.ml", "uint31.mli", "cPrimitives.ml", "cPrimitives.mli"] },
+    { "dir": "coq/lib", "excludes": ["system.ml", "system.mli", "envars.ml", "envars.mli"] },
+    { "dir": "coq/library", "excludes": ["loadpath.ml", "loadpath.mli"] },
+    "coq/parsing",
+    "coq/pretyping",
+    "coq/printing",
+    "coq/proofs",
+    "coq/stm",
+    "coq/tactics",
+    { "dir": "coq/vernac", "excludes": ["mltop.ml", "mltop.mli"] },
+
+    "coq/plugins/ltac",
+
     "coq-serapi/serapi",
 
     "camlp5/ocaml_src/lib",

@@ -4,3 +4,6 @@
 [submodule "coq-serapi"]
 	path = coq-serapi
 	url = git@github.com:ejgallego/coq-serapi.git
+[submodule "coq"]
+	path = coq
+	url = git@github.com:joelburget/coq.git

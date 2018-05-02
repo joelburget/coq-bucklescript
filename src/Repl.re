@@ -7,8 +7,8 @@ open Serapi_protocol;
 */
 type action =
   | Typed(string)
-  | Command(string)
-  | Message(answer);
+  | Command(string);
+  /* | Message(answer); */
 
 module StringMap = Map.Make({
   type t = string;
@@ -17,14 +17,12 @@ module StringMap = Map.Make({
 
 type state = {
   text: string,
-  history: StringMap.t((string, list(answer_kind))),
+  history: list((string, Stateid.t, list(answer_kind), list(answer_kind))),
   /* inputRef: ref(option(ReasonReact.reactRef)), */
   inputRef: ref(option(Dom.element)),
 };
 
 let component = ReasonReact.reducerComponent("Repl");
-
-let onSubmit = (text) => { Js.log(text) };
 
 let valueFromEvent = (evt) : string => (
   evt
@@ -36,28 +34,87 @@ let setInputRef = (theRef: Js.nullable(Dom.element), {ReasonReact.state}) => {
   state.inputRef := Js.Nullable.toOption(theRef);
 };
 
-Js.log(exec_cmd(Noop));
-Js.log(exec_cmd(Help));
-let result = exec_cmd(Add(
-      { lim: None,
-        ontop: None /* Some(Stateid.of_int(1)) */,
-        newtip: None,
-        verb: true
-      },
-      "Inductive foo := Foo."
-));
-Js.log2("result", result);
-List.map(ans => Serapi_protocol.pp_answer(Format.std_formatter, ans), result);
+Printexc.record_backtrace(true);
+Flags.debug := true;
+Lib.init();
+Global.set_engagement(Declarations.PredicativeSet);
+
+let stm_options = Stm.AsyncOpts.default_opts;
+CoqworkmgrApi.(init(High));
+
+/* We need to declare a toplevel module name. */
+let sertop_dp = Names.DirPath.make([Names.Id.of_string("coqbs")]);
+
+Stm.init_core();
+let ndoc = {
+  Stm.doc_type: Stm.Interactive(sertop_dp),
+  require_libs: [/* ("Coq.Init.Prelude", None, Some(true)) */],
+  stm_options,
+};
+let (doc, _) = Stm.new_doc(ndoc);
+
+/* workaround to load G_constr / G_prim (side-effecting import) */
+let _ = G_constr.ldots_var;
+let _ = G_prim.prim_kw;
+let _ = G_vernac.vernac_kw;
+let _ = G_tactic.tactic_kw;
+
+let pp_answer = (answer) => {
+  Serapi_protocol.pp_answer(Format.str_formatter, answer);
+  Format.flush_str_formatter()
+};
+
 /*
-Js.log(exec_cmd(Add(
+let result = exec_cmd(Add(
       { lim: None,
         ontop: None,
         newtip: None,
         verb: true
       },
-      "From Coq Require Import Prelude."
-)));
+      "Definition f := g."
+));
+List.map(ans => Js.log(pp_answer(ans)), result);
+
+let result = exec_cmd(Query(
+      {
+        preds: [],
+        limit: None,
+        /* TODO: how to use default fields? */
+        sid: Stm.get_current_state(~doc),
+        pp: { pp_format: PpStr, pp_depth: 0, pp_elide: "...", pp_margin: 72 },
+        route: 0,
+      },
+      Ast
+));
+List.map(ans => Serapi_protocol.pp_answer(Format.std_formatter, ans), result);
+
+let _result = exec_cmd(Add(
+      { lim: None,
+        ontop: None,
+        newtip: None,
+        verb: true
+      },
+      "Inductive empty :=."
+      /* "Inductive nat : Set := O : nat | S : nat -> nat." */
+      /* "Inductive bool := True | False." */
+      /* "Inductive foo := Foo : foo." */
+));
+
+Js.log("querying for data type");
+let result = exec_cmd(Query(
+      {
+        preds: [],
+        limit: None,
+        /* TODO: how to use default fields? */
+        sid: Stm.get_current_state(~doc),
+        pp: { pp_format: PpStr, pp_depth: 0, pp_elide: "...", pp_margin: 72 },
+        route: 0,
+      },
+      Ast
+));
 */
+
+Feedback.add_feeder(Js.log);
 
 let make = (_children) => {
   ...component,
@@ -65,7 +122,7 @@ let make = (_children) => {
   initialState: fun () => {
     {
       text: "",
-      history: StringMap.empty,
+      history: [],
       inputRef: ref(None),
     }
   },
@@ -77,58 +134,74 @@ let make = (_children) => {
   reducer: fun (action, state) =>
     switch (action) {
 
-    | Command(_line) => {
+    | Command(line) => {
       let history = state.history;
-      /*
-      let len = Array.length(history);
-      /* unsafe_set because we're extending the array */
-      Array.unsafe_set(history, len, (line, []));
-      */
+      let results = exec_cmd(Add(
+        { lim: None,
+          ontop: None,
+          newtip: None,
+          verb: true
+        },
+        line
+      ));
+      let Added(stateId, _loc, _) = List.find(
+        result => switch (result) {
+          | Added(_, _, _) => true
+          | _ => false
+          },
+        results
+      );
+      let ast = exec_cmd(Query(
+            {
+              preds: [],
+              limit: None,
+              /* TODO: how to use default fields? */
+              sid: stateId, /* Stm.get_current_state(~doc), */
+              pp: { pp_format: PpStr, pp_depth: 0, pp_elide: "...", pp_margin: 72 },
+              route: 0,
+            },
+            Ast
+      ));
       ReasonReact.Update({
         ...state,
-        history,
+        history: [(line, stateId, ast, results), ...history],
         text: "",
-      }) /* , _self => WebWorkers.postMessage(state.worker, line)) */
+      })
     }
     | Typed(text) => ReasonReact.Update({...state, text})
-
-    /* TODO: scroll to bottom (if already scrolled) */
-    /* TODO: track Ack / Completed */
-    | Message(msg) => {
-      switch(msg) {
-        | Answer(cmd_tag, answer_kind) => {
-          let history = state.history;
-          let (cmd, prev_history) = StringMap.find(cmd_tag, history);
-          /* Array.set(history, cmd_tag, (cmd, [answer_kind, ...prev_history])); */
-          let history = StringMap.add(cmd_tag, (cmd, [answer_kind, ...prev_history]), history);
-          ReasonReact.Update({...state, history})
-        }
-        | Feedback({ contents }) => ReasonReact.SideEffects(_self =>
-          Js.log2("processing feedback", contents)
-        )
-      }
-    }
   },
 
   render: ({state: {history, text, inputRef}, reduce, handle}) => {
     /* TODO: make collapsible */
     let historyOutput =
       history
-      |> StringMap.bindings
-      |> List.map((historyEntry: (string, (string, list(answer_kind)))) => {
-        let (i1, (op, output)) = historyEntry;
+      |> List.mapi((i1, (op, _stateId, astOutput, output)) => {
+        /* TODO: we actually want this to appear to the side. I think. */
         let output_elems =
           output
           |> List.mapi((i2, answer_kind) => (
-            <p key=(i1 ++ "." ++ string_of_int(i2))>(ReasonReact.stringToElement(Js.String.make(answer_kind)))</p>
-          ))
-          |> List.rev;
+            <p key=("answer." ++ string_of_int(i1) ++ "." ++ string_of_int(i2))>
+              (ReasonReact.stringToElement(
+                  pp_answer(answer_kind)
+              ))
+            </p>
+          ));
+        let ast_output_elems =
+          astOutput
+          |> List.mapi((i2, answer_kind) => (
+            <p key=("ast." ++ string_of_int(i1) ++ "." ++ string_of_int(i2))>
+              (ReasonReact.stringToElement(
+                  pp_answer(answer_kind)
+              ))
+            </p>
+          ));
 
         Array.of_list(
-          [ <p key=i1>(ReasonReact.stringToElement("> "++ op))</p>,
-          ...output_elems
+          [ <p key=(string_of_int(i1))>(ReasonReact.stringToElement("> "++ op))</p>,
+          ...List.concat([output_elems, ast_output_elems])
           ]);
       })
+      |> List.rev
       |> Array.concat
       |> ReasonReact.arrayToElement;
 
@@ -155,7 +228,6 @@ let make = (_children) => {
             onChange=(reduce((evt) => Typed(valueFromEvent(evt))))
             onKeyDown=((evt) =>
             if (ReactEventRe.Keyboard.key(evt) == "Enter") {
-              onSubmit(text);
               (reduce(() => Command(text)))()
             })
           />

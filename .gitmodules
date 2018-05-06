@@ -7,3 +7,6 @@
 [submodule "coq"]
 	path = coq
 	url = git@github.com:joelburget/coq.git
+[submodule "camlp5"]
+	path = camlp5
+	url = git@github.com:camlp5/camlp5.git
